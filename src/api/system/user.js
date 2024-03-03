@@ -36,6 +36,23 @@ export function updateUser(data) {
   })
 }
 
+// 修改用户
+export function selectUserDataScope(userId) {
+  return request({
+    url: '/system/user/dataScope/' + parseStrEmpty(userId),
+    method: 'get',
+  })
+}
+
+// 修改用户
+export function updateUserDataScope(data) {
+  return request({
+    url: '/system/user/dataScope',
+    method: 'put',
+    data: data
+  })
+}
+
 // 删除用户
 export function delUser(userId) {
   return request({
@@ -126,10 +143,3 @@ export function updateAuthRole(data) {
   })
 }
 
-// 查询部门下拉树结构
-export function deptTreeSelect() {
-  return request({
-    url: '/system/user/deptTree',
-    method: 'get'
-  })
-}
