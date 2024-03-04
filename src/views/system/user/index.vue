@@ -19,7 +19,7 @@
               :expand-on-click-node="false"
               :filter-node-method="filterNode"
               ref="deptTreeRef"
-              node-key="id"
+              node-key="deptId"
               highlight-current
               default-expand-all
               @node-click="handleNodeClick"
@@ -179,7 +179,7 @@
                            v-hasPermi="['system:user:edit']"></el-button>
               </el-tooltip>
               <el-tooltip content="数据权限" placement="top" v-if="scope.row.userId !== 1">
-                <el-button link type="primary" icon="CircleCheck" @click="handleDataScope(scope.row)"
+                <el-button link type="primary" icon="User" @click="handleDataScope(scope.row)"
                            v-hasPermi="['system:user:edit']"></el-button>
               </el-tooltip>
             </template>
@@ -433,7 +433,7 @@ const deptOptions = ref([]);
 const initPassword = ref(undefined);
 const postOptions = ref([]);
 const roleOptions = ref([]);
-const deptRef = ref([]);
+const deptRef = ref (null);
 /** 数据范围选项*/
 const dataScopeOptions = ref([
   {value: "1", label: "全部数据权限"},
@@ -513,7 +513,6 @@ watch(deptName, val => {
 
 /** 查询部门下拉树结构 */
 function getDeptTree() {
-
   listDept().then(response => {
     deptOptions.value = proxy.handleProps(response.data, 'deptId', 'deptName');
   });
@@ -605,10 +604,10 @@ function handleDataScope(row) {
 
   selectUserDataScope(row.userId).then(response => {
     form.value = response.data;
-    form.value.userName=row.userName
+    form.value.userName = row.userName
     openDataScope.value = true;
-    if (response.data.deptIds.length !== 0){
-      deptRef.value.setCheckedKeys(response.data.deptIds);
+    if (response.data.deptIds.length !== 0) {
+      deptRef.value.setCheckedKeys(response.data.deptIds,true);
     }
 
 
@@ -775,7 +774,6 @@ function dataScopeSelectChange(value) {
 
 /** 所有部门节点数据 */
 function getDeptAllCheckedKeys() {
-  console.log(deptRef.value)
   // 目前被选中的部门节点
   let checkedKeys = deptRef.value.getCheckedKeys();
   // 半选中的部门节点

@@ -121,9 +121,6 @@
               <el-tooltip content="删除" placement="top" v-if="scope.row.roleId !== 1">
                 <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:role:remove']"></el-button>
               </el-tooltip>
-              <el-tooltip content="数据权限" placement="top" v-if="scope.row.roleId !== 1">
-                <el-button link type="primary" icon="CircleCheck" @click="handleDataScope(scope.row)" v-hasPermi="['system:role:edit']"></el-button>
-              </el-tooltip>
               <el-tooltip content="分配用户" placement="top" v-if="scope.row.roleId !== 1">
                 <el-button link type="primary" icon="User" @click="handleAuthUser(scope.row)" v-hasPermi="['system:role:edit']"></el-button>
               </el-tooltip>
@@ -169,9 +166,9 @@
                </el-radio-group>
             </el-form-item>
             <el-form-item label="菜单权限">
-               <el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event, 'menu')">展开/折叠</el-checkbox>
-               <el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event, 'menu')">全选/全不选</el-checkbox>
-               <el-checkbox v-model="form.menuCheckStrictly" @change="handleCheckedTreeConnect($event, 'menu')">父子联动</el-checkbox>
+               <el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event )">展开/折叠</el-checkbox>
+               <el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event )">全选/全不选</el-checkbox>
+               <el-checkbox v-model="form.menuCheckStrictly" @change="handleCheckedTreeConnect($event)">父子联动</el-checkbox>
                <el-tree
                   class="tree-border"
                   :data="menuOptions"
@@ -200,7 +197,7 @@
 
 <script setup name="Role">
 import { addRole, changeRoleStatus, delRole, getRole, listRole, updateRole } from "@/api/system/role";
-import { roleMenuTreeselect, treeselect as menuTreeselect } from "@/api/system/menu";
+import { roleMenuTreeSelect, treeselect as menuTreeselect} from "@/api/system/menu";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -324,8 +321,8 @@ function reset() {
   }
   menuExpand.value = false;
   menuNodeAll.value = false;
-  deptExpand.value = true;
-  deptNodeAll.value = false;
+  // deptExpand.value = true;
+  // deptNodeAll.value = false;
   form.value = {
     roleId: undefined,
     roleName: undefined,
@@ -351,14 +348,14 @@ function handleAdd() {
 function handleUpdate(row) {
   reset();
   const roleId = row.roleId || ids.value;
-  const roleMenu = getRoleMenuTreeselect(roleId);
+  const roleMenu = getRoleMenuTreeSelect(roleId);
   getRole(roleId).then(response => {
     form.value = response.data;
     form.value.roleSort = Number(form.value.roleSort);
     open.value = true;
     nextTick(() => {
       roleMenu.then((res) => {
-        let checkedKeys = res.checkedKeys;
+        let checkedKeys = res.data.checkedKeys;
         checkedKeys.forEach((v) => {
           nextTick(() => {
             menuRef.value.setChecked(v, true, false);
@@ -370,19 +367,13 @@ function handleUpdate(row) {
   });
 }
 /** 根据角色ID查询菜单树结构 */
-function getRoleMenuTreeselect(roleId) {
-  return roleMenuTreeselect(roleId).then(response => {
-    menuOptions.value = response.menus;
-    return response;
+function getRoleMenuTreeSelect(roleId) {
+ return  roleMenuTreeSelect(roleId).then(response => {
+    menuOptions.value = proxy.handleProps(response.data.menus, "menuId",'menuName');
+    return response
   });
 }
-/** 根据角色ID查询部门树结构 */
-function getDeptTree(roleId) {
-  return deptTreeSelect(roleId).then(response => {
-    deptOptions.value = response.depts;
-    return response;
-  });
-}
+
 /** 树权限（展开/折叠）*/
 function handleCheckedTreeExpand(value) {
     let treeList = menuOptions.value;
@@ -434,12 +425,6 @@ function submitForm() {
 function cancel() {
   open.value = false;
   reset();
-}
-/** 选择角色权限范围触发 */
-function dataScopeSelectChange(value) {
-  if (value !== "2") {
-    deptRef.value.setCheckedKeys([]);
-  }
 }
 
 getList();
