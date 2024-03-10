@@ -70,7 +70,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-register-footer">
-      <span>Copyright © 2018-2023 ruoyi.vip All Rights Reserved.</span>
+      <span>Copyright © 2024-2024 ibaize.vip All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -142,10 +142,10 @@ function handleRegister() {
 
 function getCode() {
   getCodeImg().then(res => {
-    captchaEnabled.value = res.captchaEnabled === undefined ? true : res.captchaEnabled;
+    captchaEnabled.value = res.data.captchaEnabled;
     if (captchaEnabled.value) {
-      codeUrl.value = "data:image/gif;base64," + res.img;
-      registerForm.value.uuid = res.uuid;
+      codeUrl.value = res.data.img;
+      loginForm.value.uuid = res.data.uuid;
     }
   });
 }

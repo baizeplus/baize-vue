@@ -130,7 +130,8 @@ function handleLogin() {
 
 function getCode() {
   getCodeImg().then(res => {
-    captchaEnabled.value = res.captchaEnabled === undefined ? true : res.captchaEnabled;
+    captchaEnabled.value = res.data.captchaEnabled;
+    register.value=res.data.registerEnabled;
     if (captchaEnabled.value) {
       codeUrl.value = res.data.img;
       loginForm.value.uuid = res.data.uuid;

@@ -203,8 +203,8 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   listConfig(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    configList.value = response.rows;
-    total.value = response.total;
+    configList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
