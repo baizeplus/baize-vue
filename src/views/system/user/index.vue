@@ -607,9 +607,14 @@ function handleDataScope(row) {
     form.value.userName = row.userName
     openDataScope.value = true;
     if (response.data.deptIds.length !== 0) {
-      deptRef.value.setCheckedKeys(response.data.deptIds,true);
-    }
 
+      //修改点击按钮第一次会报错的现象（使用setTimeout函数让组建渲染的时候先加载）
+      setTimeout(() =>{
+        deptRef.value.setCheckedKeys(response.data.deptIds,true);
+      },0)
+      // deptRef.value.setCheckedKeys(response.data.deptIds,true);
+
+    }
 
     title.value = "分配数据权限";
   });
