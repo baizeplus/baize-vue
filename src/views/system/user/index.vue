@@ -607,29 +607,23 @@ function handleDataScope(row) {
     form.value.userName = row.userName
     openDataScope.value = true;
     if (response.data.deptIds.length !== 0) {
-
       //修改点击按钮第一次会报错的现象（使用setTimeout函数让组建渲染的时候先加载）
       setTimeout(() =>{
         deptRef.value.setCheckedKeys(response.data.deptIds,true);
       },0)
-      // deptRef.value.setCheckedKeys(response.data.deptIds,true);
-
     }
-
     title.value = "分配数据权限";
   });
 }
 
 /** 提交按钮（数据权限） */
 function submitDataScope() {
-  if (form.value.userId != undefined) {
     form.value.deptIds = getDeptAllCheckedKeys();
     updateUserDataScope(form.value).then(response => {
       proxy.$modal.msgSuccess("修改成功");
       openDataScope.value = false;
       getList();
     });
-  }
 }
 
 /** 取消按钮（数据权限）*/
