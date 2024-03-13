@@ -197,7 +197,7 @@
 
 <script setup name="Role">
 import { addRole, changeRoleStatus, delRole, getRole, listRole, updateRole } from "@/api/system/role";
-import { roleMenuTreeSelect, treeselect as menuTreeselect} from "@/api/system/menu";
+import { roleMenuTreeSelect, treeSelect as menuTreeSelect} from "@/api/system/menu";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -309,8 +309,8 @@ function handleAuthUser(row) {
 }
 /** 查询菜单树结构 */
 function getMenuTreeselect() {
-  menuTreeselect().then(response => {
-    menuOptions.value = response.data;
+  menuTreeSelect().then(response => {
+    menuOptions.value = proxy.handleProps(response.data, "menuId",'menuName');
   });
 }
 
