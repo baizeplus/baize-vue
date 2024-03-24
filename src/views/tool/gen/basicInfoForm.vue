@@ -12,8 +12,8 @@
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="实体类名称" prop="className">
-          <el-input placeholder="请输入" v-model="info.className" />
+        <el-form-item label="结构体名称" prop="structName">
+          <el-input placeholder="请输入" v-model="info.structName" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -42,7 +42,7 @@ defineProps({
 const rules = ref({
   tableName: [{ required: true, message: "请输入表名称", trigger: "blur" }],
   tableComment: [{ required: true, message: "请输入表描述", trigger: "blur" }],
-  className: [{ required: true, message: "请输入实体类名称", trigger: "blur" }],
+  structName: [{ required: true, message: "请输入结构体名称", trigger: "blur" }],
   functionAuthor: [{ required: true, message: "请输入作者", trigger: "blur" }]
 });
 </script>
