@@ -130,10 +130,10 @@
             <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
                        v-hasPermi="['tool:gen:remove']"></el-button>
           </el-tooltip>
-          <el-tooltip content="同步" placement="top">
-            <el-button link type="primary" icon="Refresh" @click="handleSynchDb(scope.row)"
-                       v-hasPermi="['tool:gen:edit']"></el-button>
-          </el-tooltip>
+<!--          <el-tooltip content="同步" placement="top">-->
+<!--            <el-button link type="primary" icon="Refresh" @click="handleSynchDb(scope.row)"-->
+<!--                       v-hasPermi="['tool:gen:edit']"></el-button>-->
+<!--          </el-tooltip>-->
           <el-tooltip content="生成代码" placement="top">
             <el-button link type="primary" icon="Download" @click="handleGenTable(scope.row)"
                        v-hasPermi="['tool:gen:code']"></el-button>
@@ -153,8 +153,8 @@
       <el-tabs v-model="preview.activeName">
         <el-tab-pane
             v-for="(value, key) in preview.data"
-            :label="key.substring(key.lastIndexOf('/')+1,key.indexOf('.tmpl'))"
-            :name="key.substring(key.lastIndexOf('/')+1,key.indexOf('.tmpl'))"
+            :label="key.substring(0,key.indexOf('.tmpl'))"
+            :name="key.substring(0,key.indexOf('.tmpl'))"
             :key="value"
         >
           <el-link :underline="false" icon="DocumentCopy" v-copyText="value" v-copyText:callback="copyTextSuccess"
@@ -198,7 +198,7 @@ const data = reactive({
     open: false,
     title: "代码预览",
     data: {},
-    activeName: "domain.java"
+    activeName: "controller"
   }
 });
 
@@ -275,7 +275,7 @@ function handlePreview(row) {
   previewTable(row.tableId).then(response => {
     preview.value.data = response.data;
     preview.value.open = true;
-    preview.value.activeName = "model.go";
+    preview.value.activeName = "controller";
   });
 }
 

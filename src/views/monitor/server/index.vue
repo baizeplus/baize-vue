@@ -112,10 +112,6 @@
                   <td colspan="3" class="el-table__cell is-leaf"><div class="cell" v-if="server.goRunTime">{{ server.goRunTime }} s</div></td>
                 </tr>
                 <tr>
-                  <td colspan="1" class="el-table__cell is-leaf"><div class="cell">安装路径</div></td>
-                  <td colspan="3" class="el-table__cell is-leaf"><div class="cell" v-if="server.goHome">{{ server.goHome }}</div></td>
-                </tr>
-                <tr>
                   <td colspan="1" class="el-table__cell is-leaf"><div class="cell">项目路径</div></td>
                   <td colspan="3" class="el-table__cell is-leaf"><div class="cell" v-if="server.goUserDir">{{ server.goUserDir }}</div></td>
                 </tr>
