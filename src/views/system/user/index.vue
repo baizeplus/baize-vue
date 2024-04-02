@@ -319,7 +319,7 @@
           :limit="1"
           accept=".xlsx, .xls"
           :headers="upload.headers"
-          :action="upload.url + '?updateSupport=' + upload.updateSupport"
+          :action="upload.url"
           :disabled="upload.isUploading"
           :on-progress="handleFileUploadProgress"
           :on-success="handleFileSuccess"
@@ -332,10 +332,6 @@
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <template #tip>
           <div class="el-upload__tip text-center">
-            <div class="el-upload__tip">
-              <el-checkbox v-model="upload.updateSupport"/>
-              是否更新已经存在的用户数据
-            </div>
             <span>仅允许导入xls、xlsx格式文件。</span>
             <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;"
                      @click="importTemplate">下载模板
@@ -452,8 +448,6 @@ const upload = reactive({
   title: "",
   // 是否禁用上传
   isUploading: false,
-  // 是否更新已经存在的用户数据
-  updateSupport: 0,
   // 设置上传的请求头部
   headers: {Authorization: "Bearer " + getToken()},
   // 上传的地址
