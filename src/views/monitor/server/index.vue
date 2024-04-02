@@ -109,7 +109,7 @@
                 </tr>
                 <tr>
                   <td colspan="1" class="el-table__cell is-leaf"><div class="cell">运行时长</div></td>
-                  <td colspan="3" class="el-table__cell is-leaf"><div class="cell" v-if="server.goRunTime">{{ server.goRunTime }} s</div></td>
+                  <td colspan="3" class="el-table__cell is-leaf"><div class="cell" v-if="server.goRunTime">{{secondsToHms( server.goRunTime)}}</div></td>
                 </tr>
                 <tr>
                   <td colspan="1" class="el-table__cell is-leaf"><div class="cell">项目路径</div></td>
@@ -159,6 +159,14 @@ import { getServer } from '@/api/monitor/server'
 
 const server = ref([]);
 const { proxy } = getCurrentInstance();
+
+function secondsToHms(second) {
+  var d = Math.floor(second / (3600*24));
+  var h = Math.floor(second % (3600*24) / 3600);
+  var m = Math.floor(second % 3600 / 60);
+  var s = second % 60;
+  return `${d}天${h}小时${m}分钟${s}秒`;
+}
 
 function getList() {
   proxy.$modal.loading("正在加载服务监控数据，请稍候！");
