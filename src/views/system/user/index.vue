@@ -366,7 +366,6 @@
         <el-form-item label="数据权限" v-show="form.dataScope == 2">
           <el-checkbox v-model="deptExpand" @change="handleCheckedTreeExpand($event)">展开/折叠</el-checkbox>
           <el-checkbox v-model="deptNodeAll" @change="handleCheckedTreeNodeAll($event)">全选/全不选</el-checkbox>
-          <!--          <el-checkbox v-model="form.deptCheckStrictly" @change="handleCheckedTreeConnect($event, 'dept')">父子联动</el-checkbox>-->
           <el-tree
               class="tree-border"
               :data="deptOptions"
@@ -374,7 +373,7 @@
               default-expand-all
               ref="deptRef"
               node-key="id"
-              :check-strictly=true
+              :check-strictly=checkStrictly
               empty-text="加载中，请稍候"
               :props="{value: 'id', label: 'label', children: 'children' }"
           ></el-tree>
@@ -429,7 +428,8 @@ const deptOptions = ref([]);
 const initPassword = ref(undefined);
 const postOptions = ref([]);
 const roleOptions = ref([]);
-const deptRef = ref (null);
+const deptRef = ref(null);
+const checkStrictly = ref(true);
 /** 数据范围选项*/
 const dataScopeOptions = ref([
   {value: "1", label: "全部数据权限"},
@@ -601,10 +601,9 @@ function handleDataScope(row) {
     form.value.userName = row.userName
     openDataScope.value = true;
     if (response.data.deptIds.length !== 0) {
-      //修改点击按钮第一次会报错的现象（使用setTimeout函数让组建渲染的时候先加载）
-      setTimeout(() =>{
-        deptRef.value.setCheckedKeys(response.data.deptIds,true);
-      },0)
+      nextTick(() => {
+        deptRef.value.setCheckedKeys(response.data.deptIds, true);
+      })
     }
     title.value = "分配数据权限";
   });
@@ -612,12 +611,12 @@ function handleDataScope(row) {
 
 /** 提交按钮（数据权限） */
 function submitDataScope() {
-    form.value.deptIds = getDeptAllCheckedKeys();
-    updateUserDataScope(form.value).then(response => {
-      proxy.$modal.msgSuccess("修改成功");
-      openDataScope.value = false;
-      getList();
-    });
+  form.value.deptIds = getDeptAllCheckedKeys();
+  updateUserDataScope(form.value).then(response => {
+    proxy.$modal.msgSuccess("修改成功");
+    openDataScope.value = false;
+    getList();
+  });
 }
 
 /** 取消按钮（数据权限）*/
@@ -785,9 +784,13 @@ function handleCheckedTreeExpand(value) {
 
 /** 树权限（全选/全不选） */
 function handleCheckedTreeNodeAll(value) {
-
-
-  deptRef.value.setCheckedNodes(value ? deptOptions.value : []);
+  checkStrictly.value = false
+  nextTick(() => {
+    deptRef.value.setCheckedNodes(value ? deptOptions.value : []);
+    nextTick(() => {
+      checkStrictly.value = true
+    })
+  })
 
 }
 

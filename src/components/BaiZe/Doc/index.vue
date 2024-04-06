@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-const url = ref('');
+const url = ref('http://doc.ibaize.vip');
 
 function goto() {
   window.open(url.value)

@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-const url = ref('');
+const url = ref('https://gitee.com/baizeplus/baize');
 
 function goto() {
   window.open(url.value)

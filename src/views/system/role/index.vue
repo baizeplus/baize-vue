@@ -321,8 +321,6 @@ function reset() {
   }
   menuExpand.value = false;
   menuNodeAll.value = false;
-  // deptExpand.value = true;
-  // deptNodeAll.value = false;
   form.value = {
     roleId: undefined,
     roleName: undefined,
