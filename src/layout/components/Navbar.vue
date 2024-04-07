@@ -1,29 +1,36 @@
 <template>
   <div class="navbar">
-    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!settingsStore.topNav" />
-    <top-nav id="topmenu-container" class="topmenu-container" v-if="settingsStore.topNav" />
+    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container"
+               @toggleClick="toggleSideBar"/>
+    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!settingsStore.topNav"/>
+    <top-nav id="topmenu-container" class="topmenu-container" v-if="settingsStore.topNav"/>
 
     <div class="right-menu">
       <template v-if="appStore.device !== 'mobile'">
-        <header-search id="header-search" class="right-menu-item" />
+        <header-search id="header-search" class="right-menu-item"/>
 
         <el-tooltip content="源码地址" effect="dark" placement="bottom">
-          <bai-ze-git id="baize-git" class="right-menu-item hover-effect" />
+          <bai-ze-git id="baize-git" class="right-menu-item hover-effect"/>
         </el-tooltip>
 
         <el-tooltip content="文档地址" effect="dark" placement="bottom">
-          <bai-ze-doc id="baize-doc" class="right-menu-item hover-effect" />
+          <bai-ze-doc id="baize-doc" class="right-menu-item hover-effect"/>
         </el-tooltip>
 
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <screenfull id="screenfull" class="right-menu-item hover-effect"/>
 
       </template>
+      <el-tooltip content="消息" effect="dark" placement="bottom">
+        <bai-ze-message id="baize-doc" class="right-menu-item hover-effect"/>
+      </el-tooltip>
+
       <div class="avatar-container">
         <el-dropdown @command="handleCommand" class="right-menu-item hover-effect" trigger="click">
           <div class="avatar-wrapper">
-            <img :src="userStore.avatar" class="user-avatar" />
-            <el-icon><caret-bottom /></el-icon>
+            <img :src="userStore.avatar" class="user-avatar"/>
+            <el-icon>
+              <caret-bottom/>
+            </el-icon>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
@@ -45,7 +52,7 @@
 </template>
 
 <script setup>
-import { ElMessageBox } from 'element-plus'
+import {ElMessageBox} from 'element-plus'
 import Breadcrumb from '@/components/Breadcrumb'
 import TopNav from '@/components/TopNav'
 import Hamburger from '@/components/Hamburger'
@@ -54,6 +61,7 @@ import SizeSelect from '@/components/SizeSelect'
 import HeaderSearch from '@/components/HeaderSearch'
 import BaiZeGit from '@/components/BaiZe/Git'
 import BaiZeDoc from '@/components/BaiZe/Doc'
+import BaiZeMessage from '@/components/BaiZe/Message'
 import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
 import useSettingsStore from '@/store/modules/settings'
@@ -88,10 +96,12 @@ function logout() {
     userStore.logOut().then(() => {
       location.href = '/index';
     })
-  }).catch(() => { });
+  }).catch(() => {
+  });
 }
 
 const emits = defineEmits(['setLayout'])
+
 function setLayout() {
   emits('setLayout');
 }
