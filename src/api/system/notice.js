@@ -29,7 +29,7 @@ export function addNotice(data) {
 // 新消息数量
 export function newMessage() {
     return request({
-        url: '/system/consumption/consumption',
+        url: '/system/consumption/newMessage',
         method: 'get',
     })
 }
