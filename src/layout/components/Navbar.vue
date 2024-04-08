@@ -21,9 +21,8 @@
 
       </template>
       <el-tooltip content="消息" effect="dark" placement="bottom">
-        <bai-ze-message id="baize-doc" class="right-menu-item hover-effect"/>
+        <bai-ze-message id="baize-message" class="right-menu-item hover-effect"/>
       </el-tooltip>
-
       <div class="avatar-container">
         <el-dropdown @command="handleCommand" class="right-menu-item hover-effect" trigger="click">
           <div class="avatar-wrapper">
@@ -57,7 +56,6 @@ import Breadcrumb from '@/components/Breadcrumb'
 import TopNav from '@/components/TopNav'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
 import HeaderSearch from '@/components/HeaderSearch'
 import BaiZeGit from '@/components/BaiZe/Git'
 import BaiZeDoc from '@/components/BaiZe/Doc'

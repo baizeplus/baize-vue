@@ -1,20 +1,13 @@
 <template>
-  <div @click="goto">
-
-
-    <el-popover placement="bottom-end" :width="500" trigger="click"  >
+  <div @click="userNoticeList">
+    <el-popover placement="bottom-end" :width="500" trigger="click">
       <template #reference>
-        <el-badge :value="1" class="item" :max="99" :show-zero="false">
-          <svg-icon icon-class="wechat" />
+        <el-badge :value="badgeValue" class="item" :max="99" :show-zero="false">
+          <svg-icon icon-class="wechat"/>
         </el-badge>
       </template>
-<!--      <div>-->
-<!--        aaaa-->
-<!--      </div>-->
       <el-table :data="gridData">
-        <el-table-column width="150" property="date" label="date"/>
-        <el-table-column width="100" property="name" label="name"/>
-        <el-table-column width="300" property="address" label="address"/>
+        <el-table-column  property="date.title" label="date"/>
       </el-table>
     </el-popover>
   </div>
@@ -22,41 +15,26 @@
 
 <script setup>
 
-const gridData = ref([]);
+import {newMessage, userNoticeList} from "@/api/system/notice";
 
-function goto() {
-  gridData.value=  [{
-    date: '2016-05-02',
-    name: 'Jack',
-    address: 'New York City',
-  },
-      {
-        date: '2016-05-04',
-        name: 'Jack',
-        address: 'New York City',
-      },
-      {
-        date: '2016-05-01',
-        name: 'Jack',
-        address: 'New York City',
-      },
-      {
-        date: '2016-05-01',
-        name: 'Jack',
-        address: 'New York City',
-      },
-      {
-        date: '2016-05-01',
-        name: 'Jack',
-        address: 'New York City',
-      },
-      {
-        date: '2016-05-03',
-        name: 'Jack',
-        address: 'New York City',
-      },]
-  console.log(gridData)
+const gridData = ref([]);
+const badgeValue = ref(0)
+const queryParams = ({pageNum: 1, pageSize: 5,})
+
+function getNewMessage() {
+  loading.value = true;
+  newMessage().then(res => {
+    badgeValue.value = res.data;
+  });
+};
+
+function userNoticeList() {
+  userNoticeList(queryParams).then(res => {
+    gridData.value = res.data.rows;
+  });
 }
+
+getNewMessage()
 </script>
 <style scoped>
 ::v-deep .el-badge__content {

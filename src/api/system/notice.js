@@ -2,43 +2,67 @@ import request from '@/utils/request'
 
 // 查询公告列表
 export function listNotice(query) {
-  return request({
-    url: '/system/notice/list',
-    method: 'get',
-    params: query
-  })
+    return request({
+        url: '/system/notice/list',
+        method: 'get',
+        params: query
+    })
 }
 
 // 查询公告详细
 export function getNotice(noticeId) {
-  return request({
-    url: '/system/notice/' + noticeId,
-    method: 'get'
-  })
+    return request({
+        url: '/system/notice/' + noticeId,
+        method: 'get'
+    })
 }
 
 // 新增公告
 export function addNotice(data) {
-  return request({
-    url: '/system/notice',
-    method: 'post',
-    data: data
-  })
+    return request({
+        url: '/system/notice',
+        method: 'post',
+        data: data
+    })
 }
 
-// 修改公告
-export function updateNotice(data) {
-  return request({
-    url: '/system/notice',
-    method: 'put',
-    data: data
-  })
+// 新消息数量
+export function newMessage() {
+    return request({
+        url: '/system/consumption/consumption',
+        method: 'get',
+    })
 }
 
-// 删除公告
-export function delNotice(noticeId) {
-  return request({
-    url: '/system/notice/' + noticeId,
-    method: 'delete'
-  })
+// 消息列表
+export function userNoticeList(query) {
+    return request({
+        url: '/system/consumption/userNoticeList',
+        method: 'get',
+        params: query
+    })
+}
+
+// 改为已读
+export function noticeRead(noticeId) {
+    return request({
+        url: '/system/consumption/noticeRead' + noticeId,
+        method: 'put'
+    })
+}
+
+// 全部已读
+export function noticeReadAll() {
+    return request({
+        url: '/system/consumption/noticeReadAll',
+        method: 'put'
+    })
+}
+
+// 删除消息
+export function noticeDelete(noticeId) {
+    return request({
+        url: '/system/consumption/noticeDelete' + noticeId,
+        method: 'delete'
+    })
 }
