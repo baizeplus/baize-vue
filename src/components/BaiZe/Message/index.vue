@@ -8,7 +8,7 @@
       </template>
       <el-table :data="gridData" stripe>
         <el-table-column label="" width="26"  >
-          <template #default="scope"><svg-icon v-if="scope.row.status=='1'" icon-class="example" style="color:red"/></template>
+          <template #default="scope"><svg-icon v-if="scope.row.status==='1'" icon-class="example" style="color:red"/></template>
         </el-table-column>
           <el-table-column label="公告标题" prop="title" :show-overflow-tooltip="true" align="left"/>
         <el-table-column label="公告类型" align="center" prop="type" width="100">
