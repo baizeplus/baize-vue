@@ -20,7 +20,7 @@ import {AppMain, Navbar, Settings, TagsView} from './components'
 import {getToken} from "@/utils/auth";
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
-
+import { onMounted, onUnmounted } from 'vue';
 const settingsStore = useSettingsStore()
 const theme = computed(() => settingsStore.theme);
 const sidebar = computed(() => useAppStore().sidebar);
@@ -28,7 +28,7 @@ const device = computed(() => useAppStore().device);
 const needTagsView = computed(() => settingsStore.tagsView);
 const fixedHeader = computed(() => settingsStore.fixedHeader);
 const childRef = ref(null);
-
+const sseUrl = import.meta.env.VITE_APP_BASE_API + "/system/sse/"+getToken();
 const classObj = computed(() => ({
   hideSidebar: !sidebar.value.opened,
   openSidebar: sidebar.value.opened,
@@ -61,25 +61,29 @@ function setLayout() {
   settingRef.value.openSetting();
 }
 
-// ToDo
-// const url = import.meta.env.VITE_APP_BASE_API + "/system/sse"; // sse链接
-//
-// const headers = {
-//   'Authorization': 'Bearer ' + getToken(),
-// };
-//
-// const eventSourceInitDict = {headers};
-//
-//
-// const es = new window.EventSource(url, eventSourceInitDict);
-//
-// es.onmessage = function (message) {
-//   console.log(message);
-//   childRef.value.NewMessage();
-// };
-//
 
+
+// let eventSource;
 //
+// onMounted(() => {
+//   eventSource = new EventSource(sseUrl);
+//
+//   eventSource.addEventListener('notice', function(event) {
+//     console.log(event.data);
+//   }, false);
+//
+//   // eventSource.onmessage = event => {
+//   //   // 这里是你处理事件的代码
+//   //   console.log(event.data);
+//   // };
+// });
+//
+// onUnmounted(() => {
+//   if (eventSource) {
+//     eventSource.close();
+//   }
+// });
+
 
 </script>
 
