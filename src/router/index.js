@@ -70,6 +70,19 @@ export const constantRoutes = [
       }
     ]
   },
+    // {
+    //     path: '/userNotice',
+    //     component: Layout,
+    //     redirect: '',
+    //     children: [
+    //         {
+    //             path: '/userNotice',
+    //             component: () => import('@/views/system/userNotice'),
+    //             name: 'Index',
+    //             meta: {title: '首页', icon: 'dashboard'}
+    //         }
+    //     ]
+    // },
   {
     path: '/user',
     component: Layout,

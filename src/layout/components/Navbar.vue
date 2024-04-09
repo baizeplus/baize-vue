@@ -103,6 +103,10 @@ const emits = defineEmits(['setLayout'])
 function setLayout() {
   emits('setLayout');
 }
+
+function NewMessage(){
+  console.log("111")
+}
 </script>
 
 <style lang='scss' scoped>

@@ -16,7 +16,6 @@
             <dict-tag :options="sys_notice_type" :value="scope.row.type"/>
           </template>
         </el-table-column>
-
         <el-table-column label="发送人" align="center" prop="createName" width="100"/>
       </el-table>
     </el-popover>
