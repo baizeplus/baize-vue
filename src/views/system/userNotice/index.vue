@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <el-col :span="8">
+      <el-col :span="9">
         <div class=" ep-bg-purple"/>
         <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-          <el-tab-pane label="User" name="">全部</el-tab-pane>
-          <el-tab-pane label="Config" name="1">消息</el-tab-pane>
-          <el-tab-pane label="Role" name="2">通知</el-tab-pane>
+          <el-tab-pane label="全部" name=""></el-tab-pane>
+          <el-tab-pane label="消息" name="1"></el-tab-pane>
+          <el-tab-pane label="通知" name="2"></el-tab-pane>
         </el-tabs>
         <el-table :data="noticeList" stripe @selection-change="handleSelectionChange" @row-click="rowClickHandle">
           <el-table-column type="selection" width="50" align="center"/>
@@ -16,13 +16,13 @@
             </template>
           </el-table-column>
           <el-table-column label="公告标题" prop="title" :show-overflow-tooltip="true" align="left"/>
-          <el-table-column label="公告类型" align="center" prop="type" width="100">
+          <el-table-column label="公告类型" align="center" prop="type" width="80">
             <template #default="scope">
               <dict-tag :options="sys_notice_type" :value="scope.row.type"/>
             </template>
           </el-table-column>
           <el-table-column label="发送人" align="center" prop="createName" width="100"/>
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="70">
             <template #default="scope">
               <el-button link type="primary" icon="Delete" @click="deleteById(scope.row)">
                 删除
@@ -38,7 +38,7 @@
             @pagination="getList"
         />
       </el-col>
-      <el-col :span="16">
+      <el-col :span="15">
         <div class=" ep-bg-purple"/>
         <el-scrollbar>
 
@@ -56,13 +56,14 @@ import {userNoticeList, noticeRead, noticeReadAll,userNoticeGetInfo, noticeDelet
 const {proxy} = getCurrentInstance();
 const {sys_notice_type} = proxy.useDict("sys_notice_type");
 const activeName = ref('')
+const loading = ref(true);
 const noticeList = ref([]);
 const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
 });
 const total = ref(0);
-
+const ids = ref([]);
 /** 选择条数  */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
@@ -88,7 +89,7 @@ function rowClickHandle(row) {
 }
 
 function deleteById(row) {
-  const userIds = row.userId || ids.value;
+  const userIds = row.id || ids.value;
   noticeDelete(userIds).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");

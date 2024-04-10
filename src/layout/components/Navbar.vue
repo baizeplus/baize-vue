@@ -21,7 +21,7 @@
 
       </template>
       <el-tooltip content="消息" effect="dark" placement="bottom">
-        <bai-ze-message id="baize-message" class="right-menu-item hover-effect"/>
+        <bai-ze-message id="baize-message" class="right-menu-item hover-effect"  ref="childRef"/>
       </el-tooltip>
       <div class="avatar-container">
         <el-dropdown @command="handleCommand" class="right-menu-item hover-effect" trigger="click">
@@ -63,10 +63,12 @@ import BaiZeMessage from '@/components/BaiZe/Message'
 import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
 import useSettingsStore from '@/store/modules/settings'
+import {Navbar} from "@/layout/components/index.js";
 
 const appStore = useAppStore()
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
+const childRef = ref(null);
 
 function toggleSideBar() {
   appStore.toggleSideBar()
@@ -104,9 +106,12 @@ function setLayout() {
   emits('setLayout');
 }
 
-function NewMessage(){
-  console.log("111")
+function updateMessage(){
+  nextTick(() => {
+    childRef.value.getNewMessage()
+  })
 }
+defineExpose({updateMessage})
 </script>
 
 <style lang='scss' scoped>

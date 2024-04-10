@@ -149,8 +149,6 @@ const {proxy} = getCurrentInstance();
 const {sys_notice_type} = proxy.useDict("sys_notice_type");
 
 const deptOptions = ref([]);
-const deptNodeAll = ref(false);
-const deptExpand = ref(true);
 const noticeList = ref([]);
 const open = ref(false);
 const loading = ref(true);
@@ -164,6 +162,8 @@ const checkStrictly = ref(true);
 const deptRef = ref(null);
 
 const data = reactive({
+  deptNodeAll: false,
+  deptExpand: true,
   form: {},
   queryParams: {
     pageNum: 1,
@@ -178,7 +178,7 @@ const data = reactive({
   },
 });
 
-const {queryParams, form, rules} = toRefs(data);
+const {queryParams, form, rules, deptNodeAll, deptExpand} = toRefs(data);
 
 /** 查询公告列表 */
 function getList() {
@@ -233,6 +233,8 @@ function reset() {
     type: undefined,
     txt: undefined,
   };
+  deptNodeAll.value = false
+  deptExpand.value = true
   proxy.resetForm("noticeRef");
 }
 

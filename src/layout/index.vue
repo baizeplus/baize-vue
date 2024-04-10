@@ -62,27 +62,24 @@ function setLayout() {
 }
 
 
+let eventSource;
 
-// let eventSource;
-//
-// onMounted(() => {
-//   eventSource = new EventSource(sseUrl);
-//
-//   eventSource.addEventListener('notice', function(event) {
-//     console.log(event.data);
-//   }, false);
-//
-//   // eventSource.onmessage = event => {
-//   //   // 这里是你处理事件的代码
-//   //   console.log(event.data);
-//   // };
-// });
-//
-// onUnmounted(() => {
-//   if (eventSource) {
-//     eventSource.close();
-//   }
-// });
+onMounted(() => {
+  eventSource = new EventSource(sseUrl);
+
+  eventSource.addEventListener('notice', function(event) {
+    nextTick(() => {
+      childRef.value.updateMessage()
+    })
+  }, false);
+
+});
+
+onUnmounted(() => {
+  if (eventSource) {
+    eventSource.close();
+  }
+});
 
 
 </script>

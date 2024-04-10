@@ -46,6 +46,7 @@ function userNotice() {
 }
 
 getNewMessage()
+defineExpose({getNewMessage})
 </script>
 <style scoped>
 ::v-deep(.el-badge__content) {
