@@ -63,7 +63,6 @@ import BaiZeMessage from '@/components/BaiZe/Message'
 import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
 import useSettingsStore from '@/store/modules/settings'
-import {Navbar} from "@/layout/components/index.js";
 
 const appStore = useAppStore()
 const userStore = useUserStore()
