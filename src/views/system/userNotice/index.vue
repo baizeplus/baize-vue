@@ -59,7 +59,7 @@
       <el-col :span="15">
 
         <el-scrollbar>
-          <div v-html="txt"></div>
+          <div v-html="notice.txt"></div>
         </el-scrollbar>
       </el-col>
     </el-row>
@@ -82,6 +82,9 @@ const noticeList = ref([]);
 const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
+});
+const notice = ref({
+  txt:"",
 });
 const total = ref(0);
 const ids = ref([]);
@@ -110,7 +113,7 @@ function getList() {
 }
 
 function rowClickHandle(row) {
-  txt.value=row.txt
+  notice.value=row
   if (row.status === '1') {
     row.status = '2';
     noticeRead(row.id)
@@ -130,9 +133,7 @@ function handleClick(a, b) {
 }
 function getInfo(id) {
   userNoticeGetInfo(id).then(response => {
-    console.log(response)
-    txt.value=response.data.txt
-    console.log(txt.value)
+    notice.value=response.data
   })
 }
 
@@ -140,9 +141,7 @@ let id =route.query.id
 if( id !==undefined){
   getInfo(id)
   router.push(route.path);
-
 }
-
 getList()
 </script>
 <style scoped lang="scss">

@@ -156,15 +156,13 @@
                   <el-form-item label="操作模块：">{{ form.title }} / {{ typeFormat(form) }}</el-form-item>
                   <el-form-item
                     label="登录信息："
-                  >{{ form.operName }} / {{ form.operIp }} / {{ form.operLocation }}</el-form-item>
+                  >{{ form.operName }} / {{ form.operIp }} </el-form-item>
                </el-col>
                <el-col :span="12">
                   <el-form-item label="请求地址：">{{ form.operUrl }}</el-form-item>
                   <el-form-item label="请求方式：">{{ form.requestMethod }}</el-form-item>
                </el-col>
-               <el-col :span="24">
-                  <el-form-item label="操作方法：">{{ form.method }}</el-form-item>
-               </el-col>
+
                <el-col :span="24">
                   <el-form-item label="请求参数：">{{ form.operParam }}</el-form-item>
                </el-col>
@@ -173,8 +171,8 @@
                </el-col>
                <el-col :span="8">
                   <el-form-item label="操作状态：">
-                     <div v-if="form.status === 0">正常</div>
-                     <div v-else-if="form.status === 1">失败</div>
+                     <div v-if="form.status === '0'">正常</div>
+                     <div v-else-if="form.status === '1'">失败</div>
                   </el-form-item>
                </el-col>
                <el-col :span="8">
@@ -234,8 +232,8 @@ const { queryParams, form } = toRefs(data);
 function getList() {
   loading.value = true;
   list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    operlogList.value = response.rows;
-    total.value = response.total;
+    operlogList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
