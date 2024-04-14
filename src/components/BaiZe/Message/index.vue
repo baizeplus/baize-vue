@@ -1,6 +1,6 @@
 <template>
   <div @click="userNotice">
-    <el-popover placement="bottom-end" :width="500" trigger="click">
+    <el-popover placement="bottom-end" :width="500" trigger="click" :visible ="visibleValue">
       <template #reference>
         <el-badge :value="badgeValue" class="item" :max="99" :show-zero="false">
           <svg-icon icon-class="wechat"/>
@@ -41,6 +41,7 @@ const {proxy} = getCurrentInstance();
 const {sys_notice_type} = proxy.useDict("sys_notice_type");
 
 const gridData = ref([]);
+const visibleValue = ref(false);
 const badgeValue = ref(0)
 const queryParams = ({pageNum: 1, pageSize: 5,})
 const router = useRouter();
@@ -54,14 +55,17 @@ function userNotice() {
   userNoticeList(queryParams).then(res => {
     gridData.value = res.data.rows;
   });
+  visibleValue.value=true
 }
 function rowClick (a){
   // 跳转 URL
   router.push('/userNotice?id='+a.id);
+  visibleValue.value=false
 }
 function showAll (){
   // 跳转 URL
   router.push('/userNotice');
+  visibleValue.value=false
 }
 
 getNewMessage()
