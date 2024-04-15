@@ -1,13 +1,15 @@
 <template>
   <div class="app-container">
+    <el-tabs v-model="activeName" class="demo-tabs" @tab-change="handleClick">
+      <el-tab-pane label="全部" name=""></el-tab-pane>
+      <el-tab-pane v-for="(item,index) in sys_notice_type" :key="index" :label="item.label" :name="item.value">
+        {{ item.dictLabel }}
+      </el-tab-pane>
+    </el-tabs>
     <el-row :gutter="20">
       <el-col :span="9">
         <div class=" ep-bg-purple"/>
-        <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-          <el-tab-pane label="全部" name=""></el-tab-pane>
-          <el-tab-pane label="消息" name="1"></el-tab-pane>
-          <el-tab-pane label="通知" name="2"></el-tab-pane>
-        </el-tabs>
+        <div style="display: flex; justify-content: flex-end;">
         <el-button
             type="danger"
             plain
@@ -22,6 +24,12 @@
             @click="deleteById"
         >删除
         </el-button>
+        <el-radio-group v-model="queryParams.status" style="margin-left: auto;">
+          <el-radio-button value="" @click="statusClick('')">全部</el-radio-button>
+          <el-radio-button value="1" @click="statusClick('1')">未读</el-radio-button>
+          <el-radio-button value="2" @click="statusClick('2')">已读</el-radio-button>
+        </el-radio-group>
+        </div>
         <el-table :data="noticeList" stripe @selection-change="handleSelectionChange" :show-header=false
                   @row-click="rowClickHandle">
           <el-table-column type="selection" width="50" align="center"/>
@@ -58,7 +66,10 @@
         />
       </el-col>
       <el-col :span="15">
-
+        <div style="position: relative;">
+          <h1>{{notice.title }}</h1> <dict-tag  style="position: absolute; right: 500px;" :options="sys_notice_type" :value="notice.type"/>
+          <h4>{{notice.createName }} {{ parseTime(notice.createTime) }} </h4>
+        </div>
         <el-scrollbar>
           <div v-html="notice.txt"></div>
         </el-scrollbar>
@@ -79,12 +90,13 @@ const router = useRouter();
 const {proxy} = getCurrentInstance();
 const {sys_notice_type} = proxy.useDict("sys_notice_type");
 const activeName = ref('')
-const txt = ref('')
 const loading = ref(true);
 const noticeList = ref([]);
 const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
+  type: "",
+  status: "",
 });
 const notice = ref({
   txt: "",
@@ -124,6 +136,15 @@ function rowClickHandle(row) {
     noticeRead(row.id)
   }
 }
+function statusClick(v) {
+  loading.value = true;
+  queryParams.status=v
+  userNoticeList(queryParams).then(response => {
+    noticeList.value = response.data.rows;
+    total.value = response.data.total;
+    loading.value = false;
+  });
+}
 
 function deleteById(row) {
   const ds = row.id || ids.value;
@@ -133,8 +154,14 @@ function deleteById(row) {
   })
 }
 
-function handleClick(a, b) {
-
+function handleClick(v) {
+  loading.value = true;
+  queryParams.type = v
+  userNoticeList(queryParams).then(response => {
+    noticeList.value = response.data.rows;
+    total.value = response.data.total;
+    loading.value = false;
+  });
 }
 
 function getInfo(id) {

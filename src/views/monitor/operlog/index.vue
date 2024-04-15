@@ -130,7 +130,7 @@
          </el-table-column>
          <el-table-column label="消耗时间" align="center" prop="costTime" width="110" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']">
             <template #default="scope">
-               <span>{{ scope.row.costTime }}毫秒</span>
+               <span>{{ scope.row.costTime/1e6 }}毫秒</span>
             </template>
          </el-table-column>
          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -176,7 +176,7 @@
                   </el-form-item>
                </el-col>
                <el-col :span="8">
-                  <el-form-item label="消耗时间：">{{ form.costTime }}毫秒</el-form-item>
+                  <el-form-item label="消耗时间：">{{ form.costTime/1e6 }}毫秒</el-form-item>
                </el-col>
                <el-col :span="8">
                   <el-form-item label="操作时间：">{{ parseTime(form.operTime) }}</el-form-item>
@@ -206,10 +206,8 @@ const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
-const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
-const title = ref("");
 const dateRange = ref([]);
 const defaultSort = ref({ prop: "operTime", order: "descending" });
 
