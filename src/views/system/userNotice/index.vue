@@ -22,7 +22,8 @@
             @click="deleteById"
         >删除
         </el-button>
-        <el-table :data="noticeList" stripe @selection-change="handleSelectionChange" :show-header=false @row-click="rowClickHandle">
+        <el-table :data="noticeList" stripe @selection-change="handleSelectionChange" :show-header=false
+                  @row-click="rowClickHandle">
           <el-table-column type="selection" width="50" align="center"/>
           <el-table-column label="" width="26">
             <template #default="scope">
@@ -31,14 +32,14 @@
           </el-table-column>
           <el-table-column label="标题" prop="title" :show-overflow-tooltip="true" align="left">
             <template #default="scope">
-              <span>{{scope.row.title}}</span><br>
+              <span>{{ scope.row.title }}</span><br>
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
           <el-table-column label="公共类型 发送人" align="center" prop="type" width="80">
             <template #default="scope">
               <dict-tag :options="sys_notice_type" :value="scope.row.type"/>
-              <span>{{scope.row.createName}}</span>
+              <span>{{ scope.row.createName }}</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="70">
@@ -68,9 +69,11 @@
 
 
 <script setup name="userNotice">
-import {userNoticeList, noticeRead, noticeReadAll,userNoticeGetInfo, noticeDelete} from "@/api/system/notice.js";
+import {userNoticeList, noticeRead, noticeReadAll, userNoticeGetInfo, noticeDelete} from "@/api/system/notice.js";
+
 const multiple = ref(true);
-import { useRoute } from 'vue-router'
+import {useRoute} from 'vue-router'
+
 const route = useRoute();
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -84,10 +87,11 @@ const queryParams = reactive({
   pageSize: 10,
 });
 const notice = ref({
-  txt:"",
+  txt: "",
 });
 const total = ref(0);
 const ids = ref([]);
+
 /** 选择条数  */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.id);
@@ -103,6 +107,7 @@ function readAll() {
     }));
   });
 }
+
 function getList() {
   loading.value = true;
   userNoticeList(queryParams).then(response => {
@@ -113,7 +118,7 @@ function getList() {
 }
 
 function rowClickHandle(row) {
-  notice.value=row
+  notice.value = row
   if (row.status === '1') {
     row.status = '2';
     noticeRead(row.id)
@@ -131,17 +136,21 @@ function deleteById(row) {
 function handleClick(a, b) {
 
 }
+
 function getInfo(id) {
   userNoticeGetInfo(id).then(response => {
-    notice.value=response.data
+    notice.value = response.data
   })
 }
 
-let id =route.query.id
-if( id !==undefined){
-  getInfo(id)
-  router.push(route.path);
-}
+watchEffect(() => {
+  let id = route.query.noticeId
+  if (id !== undefined) {
+    getInfo(id)
+    router.push(route.path);
+  }
+})
+
 getList()
 </script>
 <style scoped lang="scss">
