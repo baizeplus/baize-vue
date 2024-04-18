@@ -169,7 +169,7 @@
 </template>
 
 <script setup name="Gen">
-import {listTable, previewTable, delTable, genCode, synchDb} from "@/api/tool/gen";
+import {listTable, previewTable, delTable} from "@/api/tool/gen";
 import router from "@/router";
 import importTable from "./importTable";
 
@@ -231,32 +231,6 @@ function handleQuery() {
   getList();
 }
 
-/** 生成代码操作 */
-function handleGenTable(row) {
-  const tbNames = row.tableName || tableNames.value;
-  if (tbNames == "") {
-    proxy.$modal.msgError("请选择要生成的数据");
-    return;
-  }
-  if (row.genType === "1") {
-    genCode(row.tableName).then(response => {
-      proxy.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
-    });
-  } else {
-    proxy.$download.zip("/tool/gen/batchGenCode?tables=" + tbNames, "ruoyi.zip");
-  }
-}
-
-/** 同步数据库操作 */
-function handleSynchDb(row) {
-  const tableName = row.tableName;
-  proxy.$modal.confirm('确认要强制同步"' + tableName + '"表结构吗？').then(function () {
-    return synchDb(tableName);
-  }).then(() => {
-    proxy.$modal.msgSuccess("同步成功");
-  }).catch(() => {
-  });
-}
 
 /** 打开导入表弹窗 */
 function openImportTable() {
