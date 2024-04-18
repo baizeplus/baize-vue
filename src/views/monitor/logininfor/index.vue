@@ -73,16 +73,6 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="primary"
-               plain
-               icon="Unlock"
-               :disabled="single"
-               @click="handleUnlock"
-               v-hasPermi="['monitor:logininfor:unlock']"
-            >解锁</el-button>
-         </el-col>
-         <el-col :span="1.5">
-            <el-button
                type="warning"
                plain
                icon="Download"
@@ -125,7 +115,7 @@
 </template>
 
 <script setup name="Logininfor">
-import { list, delLogininfor, cleanLogininfor, unlockLogininfor } from "@/api/monitor/logininfor";
+import { list, delLogininfor, cleanLogininfor } from "@/api/monitor/logininfor";
 
 const { proxy } = getCurrentInstance();
 const { sys_common_status } = proxy.useDict("sys_common_status");
@@ -205,15 +195,7 @@ function handleClean() {
     proxy.$modal.msgSuccess("清空成功");
   }).catch(() => {});
 }
-/** 解锁按钮操作 */
-function handleUnlock() {
-  const username = selectName.value;
-  proxy.$modal.confirm('是否确认解锁用户"' + username + '"数据项?').then(function () {
-    return unlockLogininfor(username);
-  }).then(() => {
-    proxy.$modal.msgSuccess("用户" + username + "解锁成功");
-  }).catch(() => {});
-}
+
 /** 导出按钮操作 */
 function handleExport() {
   proxy.download("monitor/logininfor/export", {
