@@ -130,7 +130,7 @@
          </el-table-column>
          <el-table-column label="消耗时间" align="center" prop="costTime" width="110" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']">
             <template #default="scope">
-               <span>{{ scope.row.costTime/1e6 }}毫秒</span>
+               <span>{{ ~~(scope.row.costTime/1e6) }}毫秒</span>
             </template>
          </el-table-column>
          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
