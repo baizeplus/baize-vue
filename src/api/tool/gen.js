@@ -58,4 +58,3 @@ export function delTable(tableId) {
     method: 'delete'
   })
 }
-

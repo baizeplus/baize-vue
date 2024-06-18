@@ -283,6 +283,9 @@ function handleDelete(row) {
   }).catch(() => {
   });
 }
-
+/** 生成代码操作 */
+function handleGenTable(row) {
+    proxy.$download.zip("/tool/gen/genCode/" + row.tableId, "baize.zip");
+}
 getList();
 </script>

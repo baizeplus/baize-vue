@@ -94,6 +94,7 @@ const {proxy} = getCurrentInstance();
 const loginForm = ref({
   username: "admin",
   password: "admin123",
+  companyId: "1",
   rememberMe: false,
   code: "",
   uuid: ""
@@ -160,7 +161,8 @@ function getCookie() {
   loginForm.value = {
     username: username === undefined ? loginForm.value.username : username,
     password: password === undefined ? loginForm.value.password : decrypt(password),
-    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
+    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
+    companyId:"1"
   };
 }
 
