@@ -1,14 +1,7 @@
 <template>
     <div>
         <el-tabs type="border-card">
-            <el-tab-pane label="秒" v-if="shouldHide('second')">
-                <CrontabSecond
-                    @update="updateCrontabValue"
-                    :check="checkNumber"
-                    :cron="crontabValueObj"
-                    ref="cronsecond"
-                />
-            </el-tab-pane>
+
 
             <el-tab-pane label="分钟" v-if="shouldHide('min')">
                 <CrontabMin
@@ -55,14 +48,6 @@
                 />
             </el-tab-pane>
 
-            <el-tab-pane label="年" v-if="shouldHide('year')">
-                <CrontabYear
-                    @update="updateCrontabValue"
-                    :check="checkNumber"
-                    :cron="crontabValueObj"
-                    ref="cronyear"
-                />
-            </el-tab-pane>
         </el-tabs>
 
         <div class="popup-main">
@@ -74,10 +59,6 @@
                         <th>Cron 表达式</th>
                     </thead>
                     <tbody>
-                        <td>
-                            <span v-if="crontabValueObj.second.length < 10">{{crontabValueObj.second}}</span>
-                            <el-tooltip v-else :content="crontabValueObj.second" placement="top"><span>{{crontabValueObj.second}}</span></el-tooltip>
-                        </td>
                         <td>
                             <span v-if="crontabValueObj.min.length < 10">{{crontabValueObj.min}}</span>
                             <el-tooltip v-else :content="crontabValueObj.min" placement="top"><span>{{crontabValueObj.min}}</span></el-tooltip>
@@ -98,10 +79,6 @@
                             <span v-if="crontabValueObj.week.length < 10">{{crontabValueObj.week}}</span>
                             <el-tooltip v-else :content="crontabValueObj.week" placement="top"><span>{{crontabValueObj.week}}</span></el-tooltip>
                         </td>
-                        <td>
-                            <span v-if="crontabValueObj.year.length < 10">{{crontabValueObj.year}}</span>
-                            <el-tooltip v-else :content="crontabValueObj.year" placement="top"><span>{{crontabValueObj.year}}</span></el-tooltip>
-                        </td>
                         <td class="result">
                             <span v-if="crontabValueString.length < 90">{{crontabValueString}}</span>
                             <el-tooltip v-else :content="crontabValueString" placement="top"><span>{{crontabValueString}}</span></el-tooltip>
@@ -121,13 +98,12 @@
 </template>
 
 <script setup>
-import CrontabSecond from "./second.vue"
+
 import CrontabMin from "./min.vue"
 import CrontabHour from "./hour.vue"
 import CrontabDay from "./day.vue"
 import CrontabMonth from "./month.vue"
 import CrontabWeek from "./week.vue"
-import CrontabYear from "./year.vue"
 import CrontabResult from "./result.vue"
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['hide', 'fill'])
@@ -141,24 +117,20 @@ const props = defineProps({
         default: ""
     }
 })
-const tabTitles = ref(["秒", "分钟", "小时", "日", "月", "周", "年"])
+const tabTitles = ref([ "分钟", "小时", "日", "月", "周",])
 const tabActive = ref(0)
 const hideComponent = ref([])
 const expression = ref('')
 const crontabValueObj = ref({
-    second: "*",
     min: "*",
     hour: "*",
     day: "*",
     month: "*",
-    week: "?",
-    year: "",
+    week: "*",
 })
 const crontabValueString = computed(() => {
     const obj = crontabValueObj.value
-    return obj.second
-        + " "
-        + obj.min
+    return obj.min
         + " "
         + obj.hour
         + " "
@@ -167,7 +139,6 @@ const crontabValueString = computed(() => {
         + obj.month
         + " "
         + obj.week
-        + (obj.year === "" ? "" : " " + obj.year)
 })
 watch(expression, () => resolveExp())
 function shouldHide(key) {
@@ -177,16 +148,14 @@ function resolveExp() {
     // 反解析 表达式
     if (expression.value) {
         const arr = expression.value.split(/\s+/)
-        if (arr.length >= 6) {
+        if (arr.length === 5) {
             //6 位以上是合法表达式
             let obj = {
-                second: arr[0],
-                min: arr[1],
-                hour: arr[2],
-                day: arr[3],
-                month: arr[4],
-                week: arr[5],
-                year: arr[6] ? arr[6] : ""
+                min: arr[0],
+                hour: arr[1],
+                day: arr[2],
+                month: arr[3],
+                week: arr[4],
             }
             crontabValueObj.value = {
                 ...obj,
@@ -228,13 +197,11 @@ function submitFill() {
 function clearCron() {
     // 还原选择项
     crontabValueObj.value = {
-        second: "*",
         min: "*",
         hour: "*",
         day: "*",
         month: "*",
-        week: "?",
-        year: "",
+        week: "*",
     }
 }
 onMounted(() => {

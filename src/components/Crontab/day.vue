@@ -1,19 +1,14 @@
 <template>
     <el-form>
         <el-form-item>
-            <el-radio v-model='radioValue' :label="1">
-                日，允许的通配符[, - * ? / L W]
+            <el-radio v-model='radioValue' :value ="1">
+                日，允许的通配符[, - *  /]
             </el-radio>
         </el-form-item>
 
-        <el-form-item>
-            <el-radio v-model='radioValue' :label="2">
-                不指定
-            </el-radio>
-        </el-form-item>
 
         <el-form-item>
-            <el-radio v-model='radioValue' :label="3">
+            <el-radio v-model='radioValue' :value ="2">
                 周期从
                 <el-input-number v-model='cycle01' :min="1" :max="30" /> -
                 <el-input-number v-model='cycle02' :min="cycle01 + 1" :max="31" /> 日
@@ -21,28 +16,17 @@
         </el-form-item>
 
         <el-form-item>
-            <el-radio v-model='radioValue' :label="4">
+            <el-radio v-model='radioValue' :value ="3">
                 从
                 <el-input-number v-model='average01' :min="1" :max="30" /> 号开始，每
                 <el-input-number v-model='average02' :min="1" :max="31 - average01" /> 日执行一次
             </el-radio>
         </el-form-item>
 
-        <el-form-item>
-            <el-radio v-model='radioValue' :label="5">
-                每月
-                <el-input-number v-model='workday' :min="1" :max="31" /> 号最近的那个工作日
-            </el-radio>
-        </el-form-item>
+
 
         <el-form-item>
-            <el-radio v-model='radioValue' :label="6">
-                本月最后一天
-            </el-radio>
-        </el-form-item>
-
-        <el-form-item>
-            <el-radio v-model='radioValue' :label="7">
+            <el-radio v-model='radioValue' :value ="4">
                 指定
                 <el-select clearable v-model="checkboxList" placeholder="可多选" multiple :multiple-limit="10">
                     <el-option v-for="item in 31" :key="item" :label="item" :value="item" />
@@ -57,13 +41,11 @@ const props = defineProps({
     cron: {
         type: Object,
         default: {
-            second: "*",
             min: "*",
             hour: "*",
             day: "*",
             month: "*",
-            week: "?",
-            year: "",
+            week: "*",
         }
     },
     check: {
@@ -102,64 +84,41 @@ watch([radioValue, cycleTotal, averageTotal, workdayTotal, checkboxString], () =
 function changeRadioValue(value) {
     if (value === "*") {
         radioValue.value = 1
-    } else if (value === "?") {
-        radioValue.value = 2
     } else if (value.indexOf("-") > -1) {
         const indexArr = value.split('-')
         cycle01.value = Number(indexArr[0])
         cycle02.value = Number(indexArr[1])
-        radioValue.value = 3
+        radioValue.value = 2
     } else if (value.indexOf("/") > -1) {
         const indexArr = value.split('/')
         average01.value = Number(indexArr[0])
         average02.value = Number(indexArr[1])
-        radioValue.value = 4
-    } else if (value.indexOf("W") > -1) {
-        const indexArr = value.split("W")
-        workday.value = Number(indexArr[0])
-        radioValue.value = 5
-    } else if (value === "L") {
-        radioValue.value = 6
-    } else {
+        radioValue.value = 3
+    }  else {
         checkboxList.value = [...new Set(value.split(',').map(item => Number(item)))]
-        radioValue.value = 7
+        radioValue.value = 4
     }
 }
 // 单选按钮值变化时
 function onRadioChange() {
-    if (radioValue.value === 2 && props.cron.week === '?') {
-        emit('update', 'week', '*', 'day')
-    }
-    if (radioValue.value !== 2 && props.cron.week !== '?') {
-        emit('update', 'week', '?', 'day')
-    }
     switch (radioValue.value) {
         case 1:
             emit('update', 'day', '*', 'day')
             break
         case 2:
-            emit('update', 'day', '?', 'day')
-            break
-        case 3:
             emit('update', 'day', cycleTotal.value, 'day')
             break
-        case 4:
+        case 3:
             emit('update', 'day', averageTotal.value, 'day')
             break
-        case 5:
-            emit('update', 'day', workdayTotal.value, 'day')
-            break
-        case 6:
-            emit('update', 'day', 'L', 'day')
-            break
-        case 7:
-            if (checkboxList.value.length === 0) {
-                checkboxList.value.push(checkCopy.value[0])
-            } else {
-                checkCopy.value = checkboxList.value
-            }
-            emit('update', 'day', checkboxString.value, 'day')
-            break
+        case 4:
+          if (checkboxList.value.length === 0) {
+            checkboxList.value.push(checkCopy.value[0])
+          } else {
+            checkCopy.value = checkboxList.value
+          }
+          emit('update', 'day', checkboxString.value, 'day')
+          break
     }
 }
 </script>

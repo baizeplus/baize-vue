@@ -164,9 +164,9 @@ export function handleTree(data, id, parentId, children) {
     childrenList: children || 'children'
   };
 
-  var childrenListMap = {};
-  var nodeIds = {};
-  var tree = [];
+  let childrenListMap = {};
+  let nodeIds = {};
+  let tree = [];
 
   for (let d of data) {
     let parentId = d[config.parentId];

@@ -10,16 +10,6 @@
                @keyup.enter="handleQuery"
             />
          </el-form-item>
-         <el-form-item label="任务组名" prop="jobGroup">
-            <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable style="width: 200px">
-               <el-option
-                  v-for="dict in sys_job_group"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-               />
-            </el-select>
-         </el-form-item>
          <el-form-item label="任务状态" prop="status">
             <el-select v-model="queryParams.status" placeholder="请选择任务状态" clearable style="width: 200px">
                <el-option
@@ -91,11 +81,6 @@
          <el-table-column type="selection" width="55" align="center" />
          <el-table-column label="任务编号" width="100" align="center" prop="jobId" />
          <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
-         <el-table-column label="任务组名" align="center" prop="jobGroup">
-            <template #default="scope">
-               <dict-tag :options="sys_job_group" :value="scope.row.jobGroup" />
-            </template>
-         </el-table-column>
          <el-table-column label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
          <el-table-column label="cron执行表达式" align="center" prop="cronExpression" :show-overflow-tooltip="true" />
          <el-table-column label="状态" align="center">
@@ -146,18 +131,6 @@
                      <el-input v-model="form.jobName" placeholder="请输入任务名称" />
                   </el-form-item>
                </el-col>
-               <el-col :span="12">
-                  <el-form-item label="任务分组" prop="jobGroup">
-                     <el-select v-model="form.jobGroup" placeholder="请选择">
-                        <el-option
-                           v-for="dict in sys_job_group"
-                           :key="dict.value"
-                           :label="dict.label"
-                           :value="dict.value"
-                        ></el-option>
-                     </el-select>
-                  </el-form-item>
-               </el-col>
                <el-col :span="24">
                   <el-form-item prop="invokeTarget">
                      <template #label>
@@ -190,7 +163,7 @@
                      </el-input>
                   </el-form-item>
                </el-col>
-               <el-col :span="24" v-if="form.jobId !== undefined">
+               <el-col :span="24" >
                   <el-form-item label="状态">
                      <el-radio-group v-model="form.status">
                         <el-radio
@@ -198,23 +171,6 @@
                            :key="dict.value"
                            :label="dict.value"
                         >{{ dict.label }}</el-radio>
-                     </el-radio-group>
-                  </el-form-item>
-               </el-col>
-               <el-col :span="12">
-                  <el-form-item label="执行策略" prop="misfirePolicy">
-                     <el-radio-group v-model="form.misfirePolicy">
-                        <el-radio-button label="1">立即执行</el-radio-button>
-                        <el-radio-button label="2">执行一次</el-radio-button>
-                        <el-radio-button label="3">放弃执行</el-radio-button>
-                     </el-radio-group>
-                  </el-form-item>
-               </el-col>
-               <el-col :span="12">
-                  <el-form-item label="是否并发" prop="concurrent">
-                     <el-radio-group v-model="form.concurrent">
-                        <el-radio-button label="0">允许</el-radio-button>
-                        <el-radio-button label="1">禁止</el-radio-button>
                      </el-radio-group>
                   </el-form-item>
                </el-col>
@@ -241,7 +197,6 @@
                   <el-form-item label="任务名称：">{{ form.jobName }}</el-form-item>
                </el-col>
                <el-col :span="12">
-                  <el-form-item label="任务分组：">{{ jobGroupFormat(form) }}</el-form-item>
                   <el-form-item label="创建时间：">{{ form.createTime }}</el-form-item>
                </el-col>
                <el-col :span="12">
@@ -257,20 +212,6 @@
                   <el-form-item label="任务状态：">
                      <div v-if="form.status == 0">正常</div>
                      <div v-else-if="form.status == 1">暂停</div>
-                  </el-form-item>
-               </el-col>
-               <el-col :span="12">
-                  <el-form-item label="是否并发：">
-                     <div v-if="form.concurrent == 0">允许</div>
-                     <div v-else-if="form.concurrent == 1">禁止</div>
-                  </el-form-item>
-               </el-col>
-               <el-col :span="12">
-                  <el-form-item label="执行策略：">
-                     <div v-if="form.misfirePolicy == 0">默认策略</div>
-                     <div v-else-if="form.misfirePolicy == 1">立即执行</div>
-                     <div v-else-if="form.misfirePolicy == 2">执行一次</div>
-                     <div v-else-if="form.misfirePolicy == 3">放弃执行</div>
                   </el-form-item>
                </el-col>
             </el-row>
@@ -289,7 +230,7 @@ import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } f
 import Crontab from '@/components/Crontab'
 const router = useRouter();
 const { proxy } = getCurrentInstance();
-const { sys_job_group, sys_job_status } = proxy.useDict("sys_job_group", "sys_job_status");
+const {  sys_job_status } = proxy.useDict( "sys_job_status");
 
 const jobList = ref([]);
 const open = ref(false);
@@ -326,15 +267,12 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   listJob(queryParams.value).then(response => {
-    jobList.value = response.rows;
-    total.value = response.total;
+    jobList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
-/** 任务组名字典翻译 */
-function jobGroupFormat(row, column) {
-  return proxy.selectDictLabel(sys_job_group.value, row.jobGroup);
-}
+
 /** 取消按钮 */
 function cancel() {
   open.value = false;
