@@ -1,6 +1,14 @@
 import request from '@/utils/request'
 
 // 查询定时任务调度列表
+export function funList() {
+  return request({
+    url: '/monitor/job/funList',
+    method: 'get',
+  })
+}
+
+// 查询定时任务调度列表
 export function listJob(query) {
   return request({
     url: '/monitor/job/list',

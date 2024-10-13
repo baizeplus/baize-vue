@@ -10,21 +10,6 @@
                @keyup.enter="handleQuery"
             />
          </el-form-item>
-         <el-form-item label="任务组名" prop="jobGroup">
-            <el-select
-               v-model="queryParams.jobGroup"
-               placeholder="请选择任务组名"
-               clearable
-               style="width: 240px"
-            >
-               <el-option
-                  v-for="dict in sys_job_group"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-               />
-            </el-select>
-         </el-form-item>
          <el-form-item label="执行状态" prop="status">
             <el-select
                v-model="queryParams.status"
@@ -86,9 +71,9 @@
             >导出</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button 
-               type="warning" 
-               plain 
+            <el-button
+               type="warning"
+               plain
                icon="Close"
                @click="handleClose"
             >关闭</el-button>
@@ -193,7 +178,6 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     dictName: undefined,
-    dictType: undefined,
     status: undefined
   }
 });
@@ -204,8 +188,8 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   listJobLog(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    jobLogList.value = response.rows;
-    total.value = response.total;
+    jobLogList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }

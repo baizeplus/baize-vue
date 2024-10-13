@@ -132,23 +132,16 @@
                   </el-form-item>
                </el-col>
                <el-col :span="24">
-                  <el-form-item prop="invokeTarget">
-                     <template #label>
-                        <span>
-                           调用方法
-                           <el-tooltip placement="top">
-                              <template #content>
-                                 <div>
-                                    Bean调用示例：ryTask.ryParams('ry')
-                                    <br />Class类调用示例：com.ruoyi.quartz.task.RyTask.ryParams('ry')
-                                    <br />参数说明：支持字符串，布尔类型，长整型，浮点型，整型
-                                 </div>
-                              </template>
-                              <el-icon><question-filled /></el-icon>
-                           </el-tooltip>
-                        </span>
-                     </template>
-                     <el-input v-model="form.invokeTarget" placeholder="请输入调用目标字符串" />
+                  <el-form-item label="调用方法" prop="invokeTarget">
+<!--                     <el-input v-model="form.invokeTarget" placeholder="请输入调用目标字符串" />-->
+                    <el-select v-model="form.invokeTarget" placeholder="请选择调用目标方法" clearable >
+                      <el-option
+                          v-for="dict in listFun"
+                          :key="dict"
+                          :label="dict"
+                          :value="dict"
+                      />
+                    </el-select>
                   </el-form-item>
                </el-col>
                <el-col :span="24">
@@ -163,13 +156,40 @@
                      </el-input>
                   </el-form-item>
                </el-col>
+              <el-col :span="24">
+                <el-form-item
+                    v-for="(params, index) in form.jobParams"
+                    :key="index"
+                    :label="'参数' + (index+1)"
+                    :prop="`jobParams.`+index"
+                    :rules="{
+                    required: true,
+                    message: '参数不能为空',
+                    trigger: 'blur',
+                  }"
+                >
+                  <el-input v-model="form.jobParams[index]" >
+                  <template #append>
+                  <el-button type="primary" @click.prevent="removeParams(index)">
+                    删除
+                    <i class="el-icon-time el-icon--right"></i>
+                  </el-button>
+                  </template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+               <el-col :span="24" >
+                 <el-form-item label="">
+                 <el-button type="primary" @click="addParams">添加参数</el-button>
+                   </el-form-item>
+               </el-col>
                <el-col :span="24" >
                   <el-form-item label="状态">
                      <el-radio-group v-model="form.status">
                         <el-radio
                            v-for="dict in sys_job_status"
                            :key="dict.value"
-                           :label="dict.value"
+                           :value ="dict.value"
                         >{{ dict.label }}</el-radio>
                      </el-radio-group>
                   </el-form-item>
@@ -198,21 +218,22 @@
                </el-col>
                <el-col :span="12">
                   <el-form-item label="创建时间：">{{ form.createTime }}</el-form-item>
+                 <el-form-item label="下次执行时间：">{{ parseTime(form.nextValidTime) }}</el-form-item>
                </el-col>
                <el-col :span="12">
                   <el-form-item label="cron表达式：">{{ form.cronExpression }}</el-form-item>
+                 <el-form-item label="调用目标方法：">{{ form.invokeTarget }}</el-form-item>
                </el-col>
                <el-col :span="12">
-                  <el-form-item label="下次执行时间：">{{ parseTime(form.nextValidTime) }}</el-form-item>
-               </el-col>
-               <el-col :span="24">
-                  <el-form-item label="调用目标方法：">{{ form.invokeTarget }}</el-form-item>
+
+                 <el-form-item label="任务状态：">
+                   <div v-if="form.status == 0">正常</div>
+                   <div v-else-if="form.status == 1">暂停</div>
+                 </el-form-item>
                </el-col>
                <el-col :span="12">
-                  <el-form-item label="任务状态：">
-                     <div v-if="form.status == 0">正常</div>
-                     <div v-else-if="form.status == 1">暂停</div>
-                  </el-form-item>
+                 <el-form-item label="执行参数：">{{ form.jobParams }}</el-form-item>
+
                </el-col>
             </el-row>
          </el-form>
@@ -226,7 +247,7 @@
 </template>
 
 <script setup name="Job">
-import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job";
+import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus,funList } from "@/api/monitor/job";
 import Crontab from '@/components/Crontab'
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -244,6 +265,7 @@ const title = ref("");
 const openView = ref(false);
 const openCron = ref(false);
 const expression = ref("");
+const listFun = ref([])
 
 const data = reactive({
   form: {},
@@ -251,7 +273,6 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     jobName: undefined,
-    jobGroup: undefined,
     status: undefined
   },
   rules: {
@@ -273,6 +294,13 @@ function getList() {
   });
 }
 
+/** 查询定时任务列表 */
+function getFun() {
+  funList().then(response => {
+    listFun.value = response.data;
+  });
+}
+
 /** 取消按钮 */
 function cancel() {
   open.value = false;
@@ -283,11 +311,9 @@ function reset() {
   form.value = {
     jobId: undefined,
     jobName: undefined,
-    jobGroup: undefined,
     invokeTarget: undefined,
     cronExpression: undefined,
-    misfirePolicy: 1,
-    concurrent: 1,
+    jobParams:[],
     status: "0"
   };
   proxy.resetForm("jobRef");
@@ -338,7 +364,7 @@ function handleStatusChange(row) {
 /* 立即执行一次 */
 function handleRun(row) {
   proxy.$modal.confirm('确认要立即执行一次"' + row.jobName + '"任务吗?').then(function () {
-    return runJob(row.jobId, row.jobGroup);
+    return runJob(row.jobId);
   }).then(() => {
     proxy.$modal.msgSuccess("执行成功");})
   .catch(() => {});
@@ -417,5 +443,12 @@ function handleExport() {
   }, `job_${new Date().getTime()}.xlsx`);
 }
 
+function removeParams(index){
+  form.value.jobParams.splice(index, 1)
+}
+function addParams ()  {
+  form.value.jobParams.push('')
+}
+getFun()
 getList();
 </script>
