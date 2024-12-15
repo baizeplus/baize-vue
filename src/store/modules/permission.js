@@ -119,10 +119,6 @@ export function filterDynamicRoutes(routes) {
       if (auth.hasPermiOr(route.permissions)) {
         res.push(route)
       }
-    } else if (route.roles) {
-      if (auth.hasRoleOr(route.roles)) {
-        res.push(route)
-      }
     }
   })
   return res
