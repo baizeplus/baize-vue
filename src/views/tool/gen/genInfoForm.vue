@@ -89,7 +89,7 @@
         </el-form-item>
       </el-col>
     </el-row>
-    
+
 <!--    <template v-if="info.tplCategory == 'tree'">-->
 <!--      <h4 class="form-header">其他信息</h4>-->
 <!--      <el-row v-show="info.tplCategory == 'tree'">-->
@@ -196,7 +196,7 @@
 </template>
 
 <script setup>
-import { listMenu } from "@/api/system/menu";
+import { listPermission } from "@/api/system/permission.js";
 
 const subColumns = ref([]);
 const menuOptions = ref([]);
@@ -239,10 +239,10 @@ function setSubTableColumns(value) {
     }
   }
 }
-/** 查询菜单下拉树结构 */
-function getMenuTreeselect() {
-  listMenu().then(response => {
-    menuOptions.value = proxy.handleTree(response.data, "menuId");
+// /** 查询菜单下拉树结构 */
+function getPermissionTreeSelect() {
+  listPermission().then(response => {
+    menuOptions.value = proxy.handleTree(response.data, "permissionId");
   });
 }
 
@@ -256,5 +256,5 @@ watch(() => props.info.subTableName, val => {
 //   }
 // });
 
-getMenuTreeselect();
+getPermissionTreeSelect();
 </script>

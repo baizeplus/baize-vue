@@ -1,5 +1,5 @@
 /**
- * 判断url是否是http或https 
+ * 判断url是否是http或https
  * @param {string} path
  * @returns {Boolean}
  */

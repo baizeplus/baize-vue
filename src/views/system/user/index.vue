@@ -393,7 +393,6 @@
 
 <script setup name="User">
 import {getToken} from "@/utils/auth";
-import {listDept} from "@/api/system/dept";
 import {
   changeUserStatus,
   listUser,
@@ -405,7 +404,7 @@ import {
   selectUserDataScope,
   updateUserDataScope
 } from "@/api/system/user";
-
+import { selectBoxDept} from "@/api/system/selectBox.js";
 const router = useRouter();
 const {proxy} = getCurrentInstance();
 const {sys_normal_disable, sys_user_sex} = proxy.useDict("sys_normal_disable", "sys_user_sex");
@@ -507,7 +506,7 @@ watch(deptName, val => {
 
 /** 查询部门下拉树结构 */
 function getDeptTree() {
-  listDept().then(response => {
+  selectBoxDept().then(response => {
     deptOptions.value = proxy.handleProps(response.data, 'deptId', 'deptName');
   });
 };

@@ -10,15 +10,6 @@
                @keyup.enter="handleQuery"
             />
          </el-form-item>
-         <el-form-item label="权限字符" prop="roleKey">
-            <el-input
-               v-model="queryParams.roleKey"
-               placeholder="请输入权限字符"
-               clearable
-               style="width: 240px"
-               @keyup.enter="handleQuery"
-            />
-         </el-form-item>
          <el-form-item label="状态" prop="status">
             <el-select
                v-model="queryParams.status"
@@ -96,7 +87,6 @@
          <el-table-column type="selection" width="55" align="center" />
          <el-table-column label="角色编号" prop="roleId" width="120" />
          <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" width="150" />
-         <el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" width="150" />
          <el-table-column label="显示顺序" prop="roleSort" width="100" />
          <el-table-column label="状态" align="center" width="100">
             <template #default="scope">
@@ -142,17 +132,6 @@
             <el-form-item label="角色名称" prop="roleName">
                <el-input v-model="form.roleName" placeholder="请输入角色名称" />
             </el-form-item>
-            <el-form-item prop="roleKey">
-               <template #label>
-                  <span>
-                     <el-tooltip content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasRole('admin')`)" placement="top">
-                        <el-icon><question-filled /></el-icon>
-                     </el-tooltip>
-                     权限字符
-                  </span>
-               </template>
-               <el-input v-model="form.roleKey" placeholder="请输入权限字符" />
-            </el-form-item>
             <el-form-item label="角色顺序" prop="roleSort">
                <el-input-number v-model="form.roleSort" controls-position="right" :min="0" />
             </el-form-item>
@@ -161,23 +140,22 @@
                   <el-radio
                      v-for="dict in sys_normal_disable"
                      :key="dict.value"
-                     :label="dict.value"
+                     :value="dict.value"
                   >{{ dict.label }}</el-radio>
                </el-radio-group>
             </el-form-item>
             <el-form-item label="菜单权限">
-               <el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event )">展开/折叠</el-checkbox>
-               <el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event )">全选/全不选</el-checkbox>
-               <el-checkbox v-model="form.menuCheckStrictly" @change="handleCheckedTreeConnect($event)">父子联动</el-checkbox>
+               <el-checkbox v-model="permissionExpand" @change="handleCheckedTreeExpand($event )">展开/折叠</el-checkbox>
+               <el-checkbox v-model="permissionNodeAll" @change="handleCheckedTreeNodeAll($event )">全选/全不选</el-checkbox>
                <el-tree
                   class="tree-border"
-                  :data="menuOptions"
+                  :data="permissionOptions"
                   show-checkbox
-                  ref="menuRef"
-                  node-key="id"
-                  :check-strictly="!form.menuCheckStrictly"
+                  ref="permissionRef"
+                  node-key="permissionId"
+                  :check-strictly=false
                   empty-text="加载中，请稍候"
-                  :props="{ label: 'label', children: 'children' }"
+                  :props="{ label: 'permissionName', children: 'children' }"
                ></el-tree>
             </el-form-item>
             <el-form-item label="备注">
@@ -197,7 +175,7 @@
 
 <script setup name="Role">
 import { addRole, changeRoleStatus, delRole, getRole, listRole, updateRole } from "@/api/system/role";
-import { roleMenuTreeSelect, treeSelect as menuTreeSelect} from "@/api/system/menu";
+import { selectBoxPermission} from "@/api/system/selectBox.js";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -213,10 +191,10 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
-const menuOptions = ref([]);
-const menuExpand = ref(false);
-const menuNodeAll = ref(false);
-const menuRef = ref(null);
+const permissionOptions = ref([]);
+const permissionExpand = ref(false);
+const permissionNodeAll = ref(false);
+const permissionRef = ref(null);
 
 
 const data = reactive({
@@ -225,12 +203,10 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     roleName: undefined,
-    roleKey: undefined,
     status: undefined
   },
   rules: {
     roleName: [{ required: true, message: "角色名称不能为空", trigger: "blur" }],
-    roleKey: [{ required: true, message: "权限字符不能为空", trigger: "blur" }],
     roleSort: [{ required: true, message: "角色顺序不能为空", trigger: "blur" }]
   },
 });
@@ -307,30 +283,29 @@ function handleCommand(command, row) {
 function handleAuthUser(row) {
   router.push("/system/role-auth/user/" + row.roleId);
 }
-/** 查询菜单树结构 */
-function getMenuTreeselect() {
-  menuTreeSelect().then(response => {
-    menuOptions.value = proxy.handleProps(response.data, "menuId",'menuName');
+
+
+
+/** 查询权限下拉树结构 */
+function getTreeSelect() {
+  selectBoxPermission().then(response => {
+    permissionOptions.value = proxy.handleTree(response.data, "permissionId");
   });
 }
 
 /** 重置新增的表单以及其他数据  */
 function reset() {
-  if (menuRef.value != undefined) {
-    menuRef.value.setCheckedKeys([]);
+  if (permissionRef.value != undefined) {
+    permissionRef.value.setCheckedKeys([]);
   }
-  menuExpand.value = false;
-  menuNodeAll.value = false;
+  permissionExpand.value = false;
+  permissionNodeAll.value = false;
   form.value = {
     roleId: undefined,
     roleName: undefined,
-    roleKey: undefined,
     roleSort: 0,
     status: "0",
-    menuIds: [],
-    deptIds: [],
-    menuCheckStrictly: true,
-    deptCheckStrictly: true,
+    permissionIds: [],
     remark: undefined
   };
   proxy.resetForm("roleRef");
@@ -338,7 +313,7 @@ function reset() {
 /** 添加角色 */
 function handleAdd() {
   reset();
-  getMenuTreeselect();
+  getTreeSelect();
   open.value = true;
   title.value = "添加角色";
 }
@@ -346,54 +321,42 @@ function handleAdd() {
 function handleUpdate(row) {
   reset();
   const roleId = row.roleId || ids.value;
-  const roleMenu = getRoleMenuTreeSelect(roleId);
+
+  getTreeSelect()
   getRole(roleId).then(response => {
     form.value = response.data;
     form.value.roleSort = Number(form.value.roleSort);
     open.value = true;
-    nextTick(() => {
-      roleMenu.then((res) => {
-        let checkedKeys = res.data.checkedKeys;
-        checkedKeys.forEach((v) => {
-          nextTick(() => {
-            menuRef.value.setChecked(v, true, false);
-          });
-        });
+    let checkedKeys = response.data.permissionIds;
+    checkedKeys.forEach((v) => {
+      nextTick(() => {
+        permissionRef.value.setChecked(v, true, false);
       });
     });
     title.value = "修改角色";
   });
 }
-/** 根据角色ID查询菜单树结构 */
-function getRoleMenuTreeSelect(roleId) {
- return  roleMenuTreeSelect(roleId).then(response => {
-    menuOptions.value = proxy.handleProps(response.data.menus, "menuId",'menuName');
-    return response
-  });
-}
+
 
 /** 树权限（展开/折叠）*/
 function handleCheckedTreeExpand(value) {
-    let treeList = menuOptions.value;
+    let treeList = permissionOptions.value;
     for (let i = 0; i < treeList.length; i++) {
-      menuRef.value.store.nodesMap[treeList[i].id].expanded = value;
+      permissionRef.value.store.nodesMap[treeList[i].permissionId].expanded = value;
     }
 }
 /** 树权限（全选/全不选） */
 function handleCheckedTreeNodeAll(value) {
-    menuRef.value.setCheckedNodes(value ? menuOptions.value : []);
+  permissionRef.value.setCheckedNodes(value ? permissionOptions.value : []);
 
 }
-/** 树权限（父子联动） */
-function handleCheckedTreeConnect(value) {
-    form.value.menuCheckStrictly = value ? true : false;
-}
+
 /** 所有菜单节点数据 */
-function getMenuAllCheckedKeys() {
+function getPermissionAllCheckedKeys() {
   // 目前被选中的菜单节点
-  let checkedKeys = menuRef.value.getCheckedKeys();
+  let checkedKeys = permissionRef.value.getCheckedKeys();
   // 半选中的菜单节点
-  let halfCheckedKeys = menuRef.value.getHalfCheckedKeys();
+  let halfCheckedKeys = permissionRef.value.getHalfCheckedKeys();
   checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
   return checkedKeys;
 }
@@ -402,14 +365,14 @@ function submitForm() {
   proxy.$refs["roleRef"].validate(valid => {
     if (valid) {
       if (form.value.roleId != undefined) {
-        form.value.menuIds = getMenuAllCheckedKeys();
+        form.value.permissionIds = getPermissionAllCheckedKeys();
         updateRole(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        form.value.menuIds = getMenuAllCheckedKeys();
+        form.value.permissionIds = getPermissionAllCheckedKeys();
         addRole(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
