@@ -45,6 +45,7 @@ const usePermissionStore = defineStore(
             home["children"]=findSubdirectory(mr, home.name)
           })
           this.setRoutes(hr)
+
           hr.forEach(route => {
               if (!isHttp(route.path)) {
                   router.addRoute(route) // 动态添加可访问路由表
