@@ -36,7 +36,12 @@ const useUserStore = defineStore(
           getInfo().then(res => {
             const user = res.data.user
             const avatar = (user.avatar == "" || user.avatar == null) ? defAva :  user.avatar;
-            this.permissions = res.data.permissions
+            if (res.data.permissions.length===0){
+              this.permissions=['']
+            }else {
+              this.permissions = res.data.permissions
+            }
+
             this.id = user.userId
             this.name = user.userName
             this.avatar = avatar

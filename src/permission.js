@@ -29,7 +29,7 @@ router.beforeEach((to, from, next) => {
         useUserStore().getInfo().then(() => {
           isRelogin.show = false
           usePermissionStore().generateRoutes();
-          next()
+          next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
         }).catch(err => {
           useUserStore().logOut().then(() => {
             ElMessage.error(err)
