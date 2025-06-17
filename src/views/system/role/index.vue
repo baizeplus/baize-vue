@@ -318,10 +318,9 @@ function handleAdd() {
   title.value = "添加角色";
 }
 /** 修改角色 */
-function handleUpdate(row) {
-  reset();
+ function handleUpdate(row) {
+   reset();
   const roleId = row.roleId || ids.value;
-
   getTreeSelect()
   getRole(roleId).then(response => {
     form.value = response.data;
@@ -329,12 +328,19 @@ function handleUpdate(row) {
     open.value = true;
     let checkedKeys = response.data.permissionIds;
     checkedKeys.forEach((v) => {
+      // 使用两层nextTick和setTimeout确保DOM完全渲染后再设置选中状态
       nextTick(() => {
-        permissionRef.value.setChecked(v, true, false);
+        setTimeout(() => {
+          nextTick(() => {
+            if (permissionRef.value) {
+              permissionRef.value.setChecked(v, true, false);
+            }
+          });
+        }, 50);
       });
     });
-    title.value = "修改角色";
   });
+  title.value = "修改角色";
 }
 
 
